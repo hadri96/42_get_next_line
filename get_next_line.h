@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/28 11:05:30 by hmorand           #+#    #+#             */
-/*   Updated: 2023/08/30 15:17:24 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/13 23:50:59 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ typedef struct s_reader
 {
 	int		fd;
 	int		buffer_location;
-	int		remaining;
 	char	buffer[BUFFER_SIZE];
 	bool	done;
 }	t_reader;
