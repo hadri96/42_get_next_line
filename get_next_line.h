@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/28 11:05:30 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 10:41:53 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 11:22:35 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-# include <stdbool.h>
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
@@ -27,7 +26,7 @@ typedef struct s_reader
 	int		buffer_location;
 	int		buffer_size;
 	char	buffer[BUFFER_SIZE];
-	bool	done;
+	int		is_open;
 }	t_reader;
 
 char		*get_next_line(int fd);

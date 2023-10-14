@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 10:56:08 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 11:26:44 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ char	*extract_line(int fd, t_reader *current)
 	{
 		j = search_line(current->buffer, size_buff);
 		line = app_str(line, &current, &i, j);
+		if (!line)
+			return (NULL);
 		if (j == size_buff && line[i] != '\n')
 			size_buff = read(fd, current->buffer, sizeof(current->buffer));
 		else if (j < size_buff)
@@ -93,12 +95,15 @@ t_reader	current_file(int fd, t_reader (*files)[10])
 	int	i;
 
 	i = 0;
-	while ((*files)[i].fd != -1 && (*files)[i].fd != fd && i < 10)
+	while ((*files)[i].is_open != 0 && (*files)[i].fd != fd && i < 10)
 		i++;
 	if (i == 10)
 		i--;
 	if ((*files)[i].fd == -1)
+	{
 		(*files)[i].fd = fd;
+		(*files)[i].is_open = 1;
+	}
 	return ((*files)[i]);
 }
 
@@ -109,7 +114,7 @@ void	update_reader(t_reader current, int fd, t_reader (*files)[10])
 
 	i = 0;
 	j = 0;
-	while ((*files)[i].fd != -1)
+	while ((*files)[i].is_open != 0)
 	{
 		if (fd == (*files)[i].fd)
 			break ;
@@ -133,10 +138,7 @@ void	update_reader(t_reader current, int fd, t_reader (*files)[10])
 
 char	*get_next_line(int fd)
 {
-	static t_reader	files[10] = {{-1, 0, 0, "", false}, {-1, 0, 0, "", false},
-	{-1, 0, 0, "", false}, {-1, 0, 0, "", false}, {-1, 0, 0, "", false},
-	{-1, 0, 0, "", false}, {-1, 0, 0, "", false}, {-1, 0, 0, "", false},
-	{-1, 0, 0, "", false}, {-1, 0, 0, "", false}};
+	static t_reader	files[10] = {0};
 	t_reader		current;
 	char			*line;
 
