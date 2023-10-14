@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/28 11:05:30 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 11:22:35 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 17:01:47 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,9 @@ typedef struct s_reader
 }	t_reader;
 
 char		*get_next_line(int fd);
-//t_reader	current_file(int fd, t_reader (*files)[10]);
-//void		reset_reader(t_reader *files[10], int fd);
-//void		update_reader(t_reader current, int fd, t_reader (*files)[10]);
+t_reader	current_file(int fd, t_reader (*files)[10]);
+void		ft_putstr_fd(char *s, int fd);
+void		update_reader(t_reader current, int fd, t_reader (*files)[10]);
+int			search_end_line(t_reader *current, int size_buff);
 
 #endif

@@ -6,38 +6,13 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 15:57:04 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 17:07:39 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <fcntl.h>
 #include <stdio.h>
-
-void	ft_putstr_fd(char *s, int fd)
-{
-	if (!s)
-	{
-		write(fd, "(null)", 6);
-		return ;
-	}
-	while (*s)
-		write(fd, s++, 1);
-}
-
-int	search_line(char *buffer, int size_buff)
-{
-	int	i;
-
-	i = 0;
-	while (i < size_buff)
-	{
-		if (buffer[i] == '\n')
-			return (i + 1);
-		i++;
-	}
-	return (i);
-}
 
 char	*app_str(char *line, t_reader **current, int *i, int j)
 {
@@ -62,6 +37,20 @@ char	*app_str(char *line, t_reader **current, int *i, int j)
 	return (new_str);
 }
 
+int	process_buffer(t_reader **curr, int j, int i, char *line)
+{
+	if (j == (*curr)->buffer_size && line[i - 1] != '\n')
+	{
+		(*curr)->buffer_location = 0;
+		(*curr)->buffer_size = read((*curr)->fd, (*curr)->buffer, BUFFER_SIZE);
+	}
+	else if (j < (*curr)->buffer_size)
+		(*curr)->buffer_location = j;
+	else
+		(*curr)->buffer_location = 0;
+	return ((*curr)->buffer_size);
+}
+
 char	*extract_line(int fd, t_reader *current)
 {
 	char	*line;
@@ -79,68 +68,16 @@ char	*extract_line(int fd, t_reader *current)
 	line = NULL;
 	while (size_buff)
 	{
-		j = search_line(current->buffer, size_buff);
+		j = search_end_line(current, size_buff);
 		line = app_str(line, &current, &i, j);
 		if (!line)
 			return (NULL);
-		if (j == size_buff && line[i - 1] != '\n')
-		{
-			current->buffer_location = 0;
-			size_buff = read(fd, current->buffer, sizeof(current->buffer));
-		}
-		else if (j < size_buff)
-			current->buffer_location = j;
+		size_buff = process_buffer(&current, j, i, line);
 		if (line[i - 1] == '\n')
-			break;
+			break ;
 	}
 	current->buffer_size = size_buff;
 	return (line);
-}
-
-t_reader	current_file(int fd, t_reader (*files)[10])
-{
-	int	i;
-
-	i = 0;
-	while ((*files)[i].is_open != 0 && (*files)[i].fd != fd && i < 10)
-		i++;
-	if (i == 10)
-		i--;
-	if ((*files)[i].is_open == 0)
-	{
-		(*files)[i].fd = fd;
-		(*files)[i].is_open = 1;
-	}
-	return ((*files)[i]);
-}
-
-void	update_reader(t_reader current, int fd, t_reader (*files)[10])
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	while ((*files)[i].is_open != 0)
-	{
-		if (fd == (*files)[i].fd)
-			break ;
-		i++;
-	}
-	if (current.buffer_location)
-	{
-		(*files)[i].buffer_location = current.buffer_location;
-		(*files)[i].buffer_size = current.buffer_size;
-		while (j + current.buffer_location < current.buffer_size)
-		{
-			(*files)[i].buffer[j] = current.buffer[j + current.buffer_location];
-			j++;
-		}
-		while (j < current.buffer_size)
-			(*files)[i].buffer[j++] = '\0';
-	}
-	else
-		(*files)[i].buffer_location = 0;
 }
 
 char	*get_next_line(int fd)
@@ -155,13 +92,8 @@ char	*get_next_line(int fd)
 	if (!line)
 	{
 		free(line);
-		// ft_putstr_fd("line: ", 1);
-		// ft_putstr_fd(line, 1);
-		// ft_putstr_fd("\n", 1);
 		return (NULL);
 	}
-	// ft_putstr_fd("line: ", 1);
-	// ft_putstr_fd(line, 1);
 	return (line);
 }
 
@@ -213,4 +145,3 @@ char	*get_next_line(int fd)
 // 	printf("fd\n");
 // 	get_next_line(fd);
 // }
-
