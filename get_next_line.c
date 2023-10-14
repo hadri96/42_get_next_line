@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 11:26:44 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 14:28:05 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ char	*app_str(char *line, t_reader **current, int *i, int j)
 	char	*new_str;
 	int		pos;
 
-	new_str = malloc(sizeof(line) + j);
+	new_str = malloc(*i + 1 + j);
 	if (!new_str)
 		return (NULL);
 	pos = -1;
@@ -53,7 +53,7 @@ char	*app_str(char *line, t_reader **current, int *i, int j)
 	while (++pos < *i + j)
 		new_str[pos] = (*current)->buffer[pos - *i];
 	*i = *i + j;
-	new_str[(*i) + 1] = '\0';
+	new_str[*i] = '\0';
 	return (new_str);
 }
 
@@ -71,11 +71,10 @@ char	*extract_line(int fd, t_reader *current)
 	i = 0;
 	if (size_buff < 0)
 		return (NULL);
-	line = malloc(sizeof(char) * i + 1);
+	line = malloc(1);
 	if (!line)
 		return (NULL);
-	line[i] = '\0';
-	while (size_buff && line[i - 1] != '\n')
+	while (size_buff)
 	{
 		j = search_line(current->buffer, size_buff);
 		line = app_str(line, &current, &i, j);
@@ -85,6 +84,8 @@ char	*extract_line(int fd, t_reader *current)
 			size_buff = read(fd, current->buffer, sizeof(current->buffer));
 		else if (j < size_buff)
 			current->buffer_location = j;
+		if (line[i - 1] == '\n')
+			break ;
 	}
 	current->buffer_size = size_buff;
 	return (line);
@@ -99,7 +100,7 @@ t_reader	current_file(int fd, t_reader (*files)[10])
 		i++;
 	if (i == 10)
 		i--;
-	if ((*files)[i].fd == -1)
+	if ((*files)[i].is_open == 0)
 	{
 		(*files)[i].fd = fd;
 		(*files)[i].is_open = 1;
@@ -145,10 +146,12 @@ char	*get_next_line(int fd)
 	current = current_file(fd, &files);
 	line = extract_line(fd, &current);
 	update_reader(current, fd, &files);
-	if (!line[0])
+	if (!line)
 	{
 		free(line);
-		ft_putstr_fd("line: (null)\n", 1);
+		ft_putstr_fd("line: ", 1);
+		ft_putstr_fd(line, 1);
+		ft_putstr_fd("\n", 1);
 		return (NULL);
 	}
 	ft_putstr_fd("line: ", 1);
@@ -176,9 +179,9 @@ int	main(void)
 	printf("Buffer size: %d\n", BUFFER_SIZE);
 	printf("fd: %d\n", fd);
 	printf("fd2: %d\n", fd2);
-	// printf("------------------------\n");
-	// printf("fd\n");
-	// get_next_line(fd);
+	printf("------------------------\n");
+	printf("fd\n");
+	get_next_line(fd);
 	printf("------------------------\n");
 	printf("fd2\n");
 	get_next_line(fd2);
@@ -192,15 +195,16 @@ int	main(void)
 	printf("fd2\n");
 	get_next_line(fd2);
 	printf("------------------------\n");
-	// printf("fd\n");
-	// get_next_line(fd);
-	// printf("------------------------\n");
-	// printf("fd\n");
-	// get_next_line(fd);
-	// printf("------------------------\n");
-	// printf("fd\n");
-	// get_next_line(fd);
-	// printf("------------------------\n");
-	// printf("fd\n");
-	// get_next_line(fd);
+	printf("fd\n");
+	get_next_line(fd);
+	printf("------------------------\n");
+	printf("fd\n");
+	get_next_line(fd);
+	printf("------------------------\n");
+	printf("fd\n");
+	get_next_line(fd);
+	printf("------------------------\n");
+	printf("fd\n");
+	get_next_line(fd);
 }
+
