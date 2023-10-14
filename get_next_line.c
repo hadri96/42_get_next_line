@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 10:52:24 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 10:56:08 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,8 @@ int	search_line(char *buffer, int size_buff)
 	int	i;
 
 	i = 0;
-	while (i < size_buff && buffer[i] != '\n' && buffer[i])
-	{
+	while (i < size_buff && buffer[i] != '\n')
 		i++;
-	}
 	if (buffer[i] == '\n')
 		return (i + 1);
 	return (i);
@@ -84,7 +82,7 @@ char	*extract_line(int fd, t_reader *current)
 		if (j == size_buff && line[i] != '\n')
 			size_buff = read(fd, current->buffer, sizeof(current->buffer));
 		else if (j < size_buff)
-			current->buffer_location = j ;
+			current->buffer_location = j;
 	}
 	current->buffer_size = size_buff;
 	return (line);
