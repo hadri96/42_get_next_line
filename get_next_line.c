@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 10:46:07 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 10:52:24 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,10 @@ char	*extract_line(int fd, t_reader *current)
 	else
 		size_buff = current->buffer_size - current->buffer_location;
 	i = 0;
+	if (size_buff < 0)
+		return (NULL);
 	line = malloc(sizeof(char) * i + 1);
-	if (!line || size_buff == -1)
+	if (!line)
 		return (NULL);
 	line[i] = '\0';
 	while (size_buff && line[i - 1] != '\n')
@@ -95,6 +97,8 @@ t_reader	current_file(int fd, t_reader (*files)[10])
 	i = 0;
 	while ((*files)[i].fd != -1 && (*files)[i].fd != fd && i < 10)
 		i++;
+	if (i == 10)
+		i--;
 	if ((*files)[i].fd == -1)
 		(*files)[i].fd = fd;
 	return ((*files)[i]);
@@ -117,12 +121,12 @@ void	update_reader(t_reader current, int fd, t_reader (*files)[10])
 	{
 		(*files)[i].buffer_location = current.buffer_location;
 		(*files)[i].buffer_size = current.buffer_size;
-		while (j + current.buffer_location < BUFFER_SIZE)
+		while (j + current.buffer_location < current.buffer_size)
 		{
 			(*files)[i].buffer[j] = current.buffer[j + current.buffer_location];
 			j++;
 		}
-		while (j < BUFFER_SIZE)
+		while (j < current.buffer_size)
 			(*files)[i].buffer[j++] = '\0';
 	}
 	else
