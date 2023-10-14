@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 00:09:13 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 10:46:07 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*extract_line(int fd, t_reader *current)
 	if (current->buffer_location == 0)
 		size_buff = read(fd, current->buffer, sizeof(current->buffer));
 	else
-		size_buff = BUFFER_SIZE - current->buffer_location;
+		size_buff = current->buffer_size - current->buffer_location;
 	i = 0;
 	line = malloc(sizeof(char) * i + 1);
 	if (!line || size_buff == -1)
@@ -84,6 +84,7 @@ char	*extract_line(int fd, t_reader *current)
 		else if (j < size_buff)
 			current->buffer_location = j ;
 	}
+	current->buffer_size = size_buff;
 	return (line);
 }
 
@@ -92,7 +93,7 @@ t_reader	current_file(int fd, t_reader (*files)[10])
 	int	i;
 
 	i = 0;
-	while ((*files)[i].fd != -1 && (*files)[i].fd != fd)
+	while ((*files)[i].fd != -1 && (*files)[i].fd != fd && i < 10)
 		i++;
 	if ((*files)[i].fd == -1)
 		(*files)[i].fd = fd;
@@ -115,6 +116,7 @@ void	update_reader(t_reader current, int fd, t_reader (*files)[10])
 	if (current.buffer_location)
 	{
 		(*files)[i].buffer_location = current.buffer_location;
+		(*files)[i].buffer_size = current.buffer_size;
 		while (j + current.buffer_location < BUFFER_SIZE)
 		{
 			(*files)[i].buffer[j] = current.buffer[j + current.buffer_location];
@@ -129,10 +131,10 @@ void	update_reader(t_reader current, int fd, t_reader (*files)[10])
 
 char	*get_next_line(int fd)
 {
-	static t_reader	files[10] = {{-1, 0, "", false}, {-1, 0, "", false},
-	{-1, 0, "", false}, {-1, 0, "", false}, {-1, 0, "", false},
-	{-1, 0, "", false}, {-1, 0, "", false}, {-1, 0, "", false},
-	{-1, 0, "", false}, {-1, 0, "", false}};
+	static t_reader	files[10] = {{-1, 0, 0, "", false}, {-1, 0, 0, "", false},
+	{-1, 0, 0, "", false}, {-1, 0, 0, "", false}, {-1, 0, 0, "", false},
+	{-1, 0, 0, "", false}, {-1, 0, 0, "", false}, {-1, 0, 0, "", false},
+	{-1, 0, 0, "", false}, {-1, 0, 0, "", false}};
 	t_reader		current;
 	char			*line;
 
@@ -149,7 +151,7 @@ char	*get_next_line(int fd)
 	ft_putstr_fd(line, 1);
 	return (line);
 }
-/*
+
 int	main(void)
 {
 	int fd;
@@ -198,4 +200,3 @@ int	main(void)
 	// printf("fd\n");
 	// get_next_line(fd);
 }
-*/
