@@ -6,7 +6,7 @@
 /*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 17:07:39 by hmorand          ###   ########.fr       */
+/*   Updated: 2023/10/14 17:27:56 by hmorand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ char	*extract_line(int fd, t_reader *current)
 	if (size_buff < 0)
 		return (NULL);
 	line = NULL;
-	while (size_buff)
+	while (size_buff && size_buff != -1)
 	{
 		j = search_end_line(current, size_buff);
 		line = app_str(line, &current, &i, j);
@@ -102,7 +102,7 @@ char	*get_next_line(int fd)
 // 	int fd;
 // 	int fd2;
 
-// 	fd = open("test.txt", O_RDONLY);
+// 	fd = open("read_error.txt", O_RDONLY);
 // 	if (fd == -1)
 // 	{
 // 		ft_putstr_fd("Error", 1);
