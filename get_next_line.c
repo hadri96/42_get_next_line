@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmorand <hmorand@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hmorand <hmorand@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/13 20:22:43 by hmorand           #+#    #+#             */
-/*   Updated: 2023/10/14 17:27:56 by hmorand          ###   ########.fr       */
+/*   Created: 2023/10/23 18:09:59 by hmorand           #+#    #+#             */
+/*   Updated: 2023/10/26 09:04:23 by hmorand          ###   ########.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,19 @@ int	process_buffer(t_reader **curr, int j, int i, char *line)
 	return ((*curr)->buffer_size);
 }
 
+int	get_size_buff(t_reader **current, int fd, char **line, int *i)
+{
+	int	size_buff;
+
+	if ((*current)->buffer_location == 0)
+		size_buff = read(fd, (*current)->buffer, sizeof((*current)->buffer));
+	else
+		size_buff = (*current)->buffer_size - (*current)->buffer_location;
+	*line = NULL;
+	*i = 0;
+	return (size_buff);
+}
+
 char	*extract_line(int fd, t_reader *current)
 {
 	char	*line;
@@ -58,14 +71,9 @@ char	*extract_line(int fd, t_reader *current)
 	int		i;
 	int		j;
 
-	if (current->buffer_location == 0)
-		size_buff = read(fd, current->buffer, sizeof(current->buffer));
-	else
-		size_buff = current->buffer_size - current->buffer_location;
-	i = 0;
+	size_buff = get_size_buff(&current, fd, &line, &i);
 	if (size_buff < 0)
 		return (NULL);
-	line = NULL;
 	while (size_buff && size_buff != -1)
 	{
 		j = search_end_line(current, size_buff);
@@ -73,6 +81,11 @@ char	*extract_line(int fd, t_reader *current)
 		if (!line)
 			return (NULL);
 		size_buff = process_buffer(&current, j, i, line);
+		if (size_buff < 0)
+		{
+			free(line);
+			return (NULL);
+		}
 		if (line[i - 1] == '\n')
 			break ;
 	}
