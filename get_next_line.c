@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h>
-#include <stdio.h>
 
 char	*app_str(char *line, t_reader **current, int *i, int j)
 {
@@ -95,7 +93,7 @@ char	*extract_line(int fd, t_reader *current)
 
 char	*get_next_line(int fd)
 {
-	static t_reader	files[10] = {0};
+	static t_reader	files[4096] = {0};
 	t_reader		current;
 	char			*line;
 

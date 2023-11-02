@@ -12,25 +12,14 @@
 
 #include "get_next_line.h"
 
-void	ft_putstr_fd(char *s, int fd)
-{
-	if (!s)
-	{
-		write(fd, "(null)", 6);
-		return ;
-	}
-	while (*s)
-		write(fd, s++, 1);
-}
-
-t_reader	current_file(int fd, t_reader (*files)[10])
+t_reader	current_file(int fd, t_reader (*files)[4096])
 {
 	int	i;
 
 	i = 0;
-	while ((*files)[i].is_open != 0 && (*files)[i].fd != fd && i < 10)
+	while ((*files)[i].is_open != 0 && (*files)[i].fd != fd && i < 4096)
 		i++;
-	if (i == 10)
+	if (i == 4096)
 		i--;
 	if ((*files)[i].is_open == 0)
 	{
@@ -40,7 +29,7 @@ t_reader	current_file(int fd, t_reader (*files)[10])
 	return ((*files)[i]);
 }
 
-void	update_reader(t_reader current, int fd, t_reader (*files)[10])
+void	update_reader(t_reader current, int fd, t_reader (*files)[4096])
 {
 	int	i;
 	int	j;
